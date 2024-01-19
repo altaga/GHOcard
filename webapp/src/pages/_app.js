@@ -17,8 +17,8 @@ const config = createConfig(
     appName: process.env.NEXT_PUBLIC_APPNAME,
     chains,
     appDescription: process.env.NEXT_PUBLIC_DESCRIPTION,
-    appUrl: "https://family.co", // your app's url
-    appIcon: "https://family.co/logo.png", // your app's icon, no bigger than 1024x1024px (max. 1MB)
+    appUrl: "https://ghocard.vercel.app", // your app's url
+    appIcon: "https://ghocard.vercel.app/logo.png", // your app's icon, no bigger than 1024x1024px (max. 1MB)
   })
 );
 

@@ -9,7 +9,15 @@ import RNPrint from 'react-native-print';
 import QRCode from 'react-native-qrcode-svg';
 import {logo} from '../../assets/logo';
 import logoPNG from '../../assets/logo.png';
-import {NODE_ALCHEMY_KEY, NODE_AWS_URL, NODE_WC_ID} from '@env';
+import reactAutobind from 'react-autobind';
+import {
+  NODE_ALCHEMY_KEY,
+  NODE_AWS_URL,
+  NODE_WC_ID,
+  NODE_APP_NAME,
+  NODE_APP_DESC,
+} from '@env';
+import {UniversalProvider} from '@walletconnect/universal-provider';
 
 function isNumber(string) {
   return !isNaN(parseFloat(string)) && isFinite(string);
@@ -58,18 +66,28 @@ function formatInputText(inputText) {
   }
 }
 
+const BaseState = {
+  // Wallet Connect
+  qr: null,
+  paymentStatus: 'Processing...',
+  loading: false,
+  // Card
+  text: '0.00', // "0.00"
+  stage: 0, // 0
+  card: true, // true
+  cardInfo: null, // null
+  tx: null, // null
+  printData: '', // ''
+};
+
 export default class Payment extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      text: '0.00', // "0.00"
-      stage: 0, // 0
-      card: true, // true
-      cardInfo: null, // null
-      tx: null, // null
-      printData: '', // ''
-    };
+    this.state = BaseState;
+    reactAutobind(this);
     this.svg = null;
+    this.mount = true;
+    this.connector = null;
   }
 
   async getDataURL() {
@@ -132,6 +150,125 @@ export default class Payment extends Component {
         })
         .catch(error => console.log('error', error));
     });
+  }
+
+  // Wallet Connect Settings
+
+  async setupWC() {
+    this.connector = await UniversalProvider.init({
+      projectId: NODE_WC_ID, // REQUIRED your projectId
+      metadata: {
+        name: NODE_APP_NAME,
+        description: NODE_APP_DESC,
+        url: 'http://effisend.com/',
+        icons: ['https://i.ibb.co/HpqQFrJ/logo-Stroke.png'],
+      },
+    });
+
+    this.connector.on('display_uri', uri => {
+      console.log(uri);
+      (this.state.qr === null || this.state.stage === 0) &&
+        this.mount &&
+        this.setState({
+          qr: uri,
+          stage: 1,
+          loading: false,
+        });
+    });
+
+    // Subscribe to session ping
+    this.connector.on('session_ping', ({id, topic}) => {
+      console.log('session_ping', id, topic);
+    });
+
+    // Subscribe to session event
+    this.connector.on('session_event', ({event, chainId}) => {
+      console.log('session_event', event, chainId);
+    });
+
+    // Subscribe to session update
+    this.connector.on('session_update', ({topic, params}) => {
+      console.log('session_update', topic, params);
+    });
+
+    // Subscribe to session delete
+    this.connector.on('session_delete', ({id, topic}) => {
+      console.log('session_delete', id, topic);
+    });
+
+    // session established
+    this.connector.on('connect', async e => {
+      const address = await this.connector.request(
+        {
+          method: 'eth_accounts',
+          params: [],
+        },
+        'eip155:' + this.state.networkSelected.chainId.toString(),
+      );
+      await this.setStateAsync({
+        account: address[0],
+        stage: 2,
+      });
+      this.createTransaction();
+    });
+    // session disconnect
+    this.connector.on('disconnect', async e => {
+      console.log(e);
+      console.log('Connection Disconnected');
+    });
+    this.connector
+      .connect({
+        namespaces: {
+          eip155: {
+            methods: ['eth_sendTransaction'],
+            chains: ['eip155:' + this.state.networkSelected.chainId.toString()],
+            events: ['chainChanged', 'accountsChanged'],
+            rpcMap: {},
+          },
+        },
+      })
+      .then(e => {
+        console.log('Connection OK');
+        console.log(e);
+      })
+      .catch(async e => {
+        console.log(e);
+        console.log('Connection Rejected');
+        this.connector && this.cancelAndClearConnection();
+        this.mount && this.setState(WalletConnectDepositBaseState);
+      });
+  }
+
+  async cancelAndClearConnection() {
+    const topic = this.state.qr.substring(
+      this.state.qr.indexOf('wc:') + 3,
+      this.state.qr.indexOf('@'),
+    );
+    await this.connector.client.disconnect({
+      topic,
+      reason: getSdkError('USER_DISCONNECTED'),
+    });
+    await this.clearAsyncStorageWC();
+    this.connector = null;
+    delete this.connector;
+  }
+
+  componentDidMount() {
+    this.props.navigation.addListener('focus', async () => {
+      this.mount = true;
+      this.mount && this.setState(BaseState);
+    });
+    this.props.navigation.addListener('blur', async () => {
+      this.connector && this.cancelAndClearConnection();
+      this.mount && this.setState(BaseState);
+      this.mount = false;
+    });
+  }
+
+  async componentWillUnmount() {
+    this.connector && this.cancelAndClearConnection();
+    this.mount && this.setState(BaseState);
+    this.mount = false;
   }
 
   render() {

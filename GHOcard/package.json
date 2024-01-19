@@ -23,6 +23,7 @@
     "@react-native-async-storage/async-storage": "^1.21.0",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
+    "@walletconnect/universal-provider": "^2.11.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "depcheck": "^1.4.7",
     "ethers": "^5.7.2",
