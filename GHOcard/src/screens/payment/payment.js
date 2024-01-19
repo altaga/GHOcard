@@ -9,7 +9,7 @@ import RNPrint from 'react-native-print';
 import QRCode from 'react-native-qrcode-svg';
 import {logo} from '../../assets/logo';
 import logoPNG from '../../assets/logo.png';
-import {NODE_ALCHEMY_KEY, NODE_AWS_URL} from '@env';
+import {NODE_ALCHEMY_KEY, NODE_AWS_URL, NODE_WC_ID} from '@env';
 
 function isNumber(string) {
   return !isNaN(parseFloat(string)) && isFinite(string);

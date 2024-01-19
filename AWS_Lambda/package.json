@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "dependencies": {
+    "ethers": "5.7.2"
+  },
+  "name": "gho-card-pay",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT"
+}
