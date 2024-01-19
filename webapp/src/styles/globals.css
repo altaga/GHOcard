@@ -1,0 +1,286 @@
+html {
+  background-color: black;
+  font-family: monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.title {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px white;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.connectCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 white;
+  text-align: center;
+}
+
+.customHR {
+  width: 100%;
+  background-color: black;
+  height: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.customHeader {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.titleHeader {
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px white;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.customBody {
+  height: 80%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: large;
+}
+
+.mainCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 white;
+  text-align: center;
+  width: 50%;
+  height: 80%;
+}
+
+.cardSec {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 white;
+  text-align: center;
+  width: 90%;
+  height: 100%;
+}
+
+.cardInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  border: 4px solid black;
+  background: black;
+  width: 100%;
+  height: 30px;
+  margin: 20px 0px;
+}
+
+.buttons {
+  background-color: white;
+  color: black;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.buttons:hover {
+  background-color: black;
+  color: white;
+}
+
+.customFooter {
+  height: 10%;
+}
+
+.buttons2 {
+  background-color: black;
+  color: white;
+  border: 0px solid black;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.buttons3 {
+  background-color: white;
+  color: black;
+  border: 0px solid black;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.customFooter {
+  height: 10%;
+}
+
+/*
+  Mobile CSS
+*/
+
+.mainCardMobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 white;
+  width: 80%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.cardSecMobile {
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 white;
+  text-align: center;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerMobile {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.titleMobile {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px white;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.connectCardMobile {
+  display: flex;
+  width: 70%;
+  height: 30%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 0 10px 0 white;
+  text-align: center;
+}
+
+.customHeaderMobile {
+  height: 10%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.titleHeaderMobile {
+  color: white;
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px white;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.customBodyMobile {
+  height: 80%;
+}
+
+.customFooterMobile {
+  height: 10%;
+}
+
+.cardInfoMobile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 10px;
+  border: 4px solid black;
+  background: black;
+  width: 90%;
+  height: 30px;
+  margin: 20px 0px;
+}
+
+/* Buttons Mobile */
+
+.buttonsAdd {
+  background-color: black;
+  color: rgb(234, 235, 239);
+  border: 0px solid black;
+  border-radius: 4px;
+  padding: 10px;
+}
+
+.buttonsRemove {
+  background-color: rgb(234, 235, 239);
+  color: black;
+  border: 1px solid rgb(204, 205, 209);;
+  border-radius: 4px;
+  padding: 10px;
+}
