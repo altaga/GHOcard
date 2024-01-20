@@ -1,5 +1,7 @@
 import "node-libs-react-native/globals.js"
 import "@ethersproject/shims"
+import 'text-encoding-polyfill'
+import 'react-native-url-polyfill/auto';
 
 import {AppRegistry} from 'react-native';
 import App from './src/App';

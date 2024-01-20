@@ -1,23 +1,29 @@
-import {Dimensions, Image, Linking, Pressable, Text, View} from 'react-native';
-import React, {Component} from 'react';
-import VirtualKeyboard from 'react-native-virtual-keyboard';
-import ReadCard from '../../components/readCard';
+import {
+  NODE_ALCHEMY_KEY,
+  NODE_APP_DESC,
+  NODE_APP_LOGO,
+  NODE_APP_NAME,
+  NODE_APP_URL,
+  NODE_AWS_URL,
+  NODE_POS_ADDRESS,
+  NODE_WC_ID,
+} from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {UniversalProvider} from '@walletconnect/universal-provider';
 import {ethers} from 'ethers';
-import PressableEvent from '../../components/pressableEvent';
+import React, {Component} from 'react';
+import reactAutobind from 'react-autobind';
+import {Dimensions, Image, Linking, Pressable, Text, View} from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNPrint from 'react-native-print';
 import QRCode from 'react-native-qrcode-svg';
+import IconFAB from 'react-native-vector-icons/FontAwesome6';
+import VirtualKeyboard from 'react-native-virtual-keyboard';
 import {logo} from '../../assets/logo';
 import logoPNG from '../../assets/logo.png';
-import reactAutobind from 'react-autobind';
-import {
-  NODE_ALCHEMY_KEY,
-  NODE_AWS_URL,
-  NODE_WC_ID,
-  NODE_APP_NAME,
-  NODE_APP_DESC,
-} from '@env';
-import {UniversalProvider} from '@walletconnect/universal-provider';
+import PressableEvent from '../../components/pressableEvent';
+import ReadCard from '../../components/readCard';
+import {ghoABI} from '../../contracts/ierc20-GHO';
 
 function isNumber(string) {
   return !isNaN(parseFloat(string)) && isFinite(string);
@@ -68,9 +74,7 @@ function formatInputText(inputText) {
 
 const BaseState = {
   // Wallet Connect
-  qr: null,
-  paymentStatus: 'Processing...',
-  loading: false,
+  qr: ' ',
   // Card
   text: '0.00', // "0.00"
   stage: 0, // 0
@@ -107,6 +111,18 @@ export default class Payment extends Component {
     this.setState({text: newText});
   }
 
+  async setStateAsync(value) {
+    return new Promise(resolve => {
+      this.mount &&
+        this.setState(
+          {
+            ...value,
+          },
+          () => resolve(),
+        );
+    });
+  }
+
   async payWithCrypto() {
     return new Promise(async (resolve, reject) => {
       var myHeaders = new Headers();
@@ -115,7 +131,7 @@ export default class Payment extends Component {
       var raw = JSON.stringify({
         amount: parseFloat(this.state.text),
         currency: 'GHO',
-        address: '0x2eD503A5690849a935F0bf3483759B549D7976E6',
+        address: NODE_POS_ADDRESS,
       });
 
       var requestOptions = {
@@ -160,19 +176,19 @@ export default class Payment extends Component {
       metadata: {
         name: NODE_APP_NAME,
         description: NODE_APP_DESC,
-        url: 'http://effisend.com/',
-        icons: ['https://i.ibb.co/HpqQFrJ/logo-Stroke.png'],
+        url: NODE_APP_URL,
+        icons: [NODE_APP_LOGO],
       },
     });
 
     this.connector.on('display_uri', uri => {
       console.log(uri);
-      (this.state.qr === null || this.state.stage === 0) &&
+      (this.state.qr === ' ' || this.state.stage === 0) &&
         this.mount &&
         this.setState({
           qr: uri,
           stage: 1,
-          loading: false,
+          card: false,
         });
     });
 
@@ -203,13 +219,17 @@ export default class Payment extends Component {
           method: 'eth_accounts',
           params: [],
         },
-        'eip155:' + this.state.networkSelected.chainId.toString(),
+        'eip155:11155111',
       );
       await this.setStateAsync({
         account: address[0],
         stage: 2,
       });
-      this.createTransaction();
+      this.transferToken(
+        address[0],
+        NODE_POS_ADDRESS,
+        '0xc4bf5cbdabe595361438f8c6a187bdc330539c60',
+      );
     });
     // session disconnect
     this.connector.on('disconnect', async e => {
@@ -221,7 +241,7 @@ export default class Payment extends Component {
         namespaces: {
           eip155: {
             methods: ['eth_sendTransaction'],
-            chains: ['eip155:' + this.state.networkSelected.chainId.toString()],
+            chains: ['eip155:11155111'],
             events: ['chainChanged', 'accountsChanged'],
             rpcMap: {},
           },
@@ -235,7 +255,7 @@ export default class Payment extends Component {
         console.log(e);
         console.log('Connection Rejected');
         this.connector && this.cancelAndClearConnection();
-        this.mount && this.setState(WalletConnectDepositBaseState);
+        this.mount && this.setState(BaseState);
       });
   }
 
@@ -251,6 +271,67 @@ export default class Payment extends Component {
     await this.clearAsyncStorageWC();
     this.connector = null;
     delete this.connector;
+  }
+
+  async transferToken(from, to, tokenAddress) {
+    try {
+      const provider = new ethers.providers.JsonRpcProvider(
+        `https://eth-sepolia.g.alchemy.com/v2/${NODE_ALCHEMY_KEY}`,
+      );
+      const web3Provider = new ethers.providers.Web3Provider(this.connector);
+      const tokenContract = new ethers.Contract(tokenAddress, ghoABI, provider);
+      const tokenDecimals = await tokenContract.decimals();
+      const amount = ethers.utils.parseUnits(this.state.text, tokenDecimals);
+      //const gasPrice = await provider.getGasPrice();
+      const nonce = await provider.getTransactionCount(from, 'latest');
+      let transaction = await tokenContract.populateTransaction.transfer(
+        to,
+        amount.toString(),
+      );
+      transaction = {
+        ...transaction,
+        from,
+        nonce,
+        value: '0x0',
+        //gasPrice: gasPrice._hex,
+      };
+      const gas = await provider.estimateGas(transaction);
+      transaction = {
+        ...transaction,
+        gas: gas._hex,
+      };
+      const result = await web3Provider.send('eth_sendTransaction', [
+        transaction,
+      ]);
+      await provider.waitForTransaction(result);
+      this.mount &&
+        (await this.setStateAsync({
+          tx: result,
+          stage: 3,
+        }));
+    } catch (err) {
+      console.log('Error on Transaction');
+      console.log(err);
+      this.mount && this.setState(BaseState);
+    }
+    console.log('Clear Connection');
+    this.connector && this.cancelAndClearConnection();
+  }
+
+  async clearAsyncStorageWC() {
+    await AsyncStorage.multiRemove([
+      'wc@2:client:0.3//proposal',
+      'wc@2:client:0.3//session',
+      'wc@2:core:0.3//expirer',
+      'wc@2:core:0.3//history',
+      'wc@2:core:0.3//keychain',
+      'wc@2:core:0.3//messages',
+      'wc@2:core:0.3//pairing',
+      'wc@2:core:0.3//subscription',
+      'wc@2:universal_provider:/namespaces',
+      'wc@2:universal_provider:/optionalNamespaces',
+      'wc@2:universal_provider:/sessionProperties',
+    ]);
   }
 
   componentDidMount() {
@@ -353,7 +434,8 @@ export default class Payment extends Component {
                     Pay with Card
                   </Text>
                 </Pressable>
-                <Pressable
+                <PressableEvent
+                  hover
                   style={{
                     padding: 10,
                     backgroundColor: 'white',
@@ -363,12 +445,15 @@ export default class Payment extends Component {
                     width: Dimensions.get('window').width / 2.3,
                     alignItems: 'center',
                   }}
-                  onPress={() => this.setState({stage: 1, card: false})}>
+                  styleHover={{
+                    backgroundColor: '#333333ff',
+                  }}
+                  onPress={async () => await this.setupWC()}>
                   <Text
                     style={{color: 'black', fontWeight: 'bold', fontSize: 20}}>
                     Pay with QR
                   </Text>
-                </Pressable>
+                </PressableEvent>
               </View>
             </View>
           )}
@@ -542,11 +627,189 @@ export default class Payment extends Component {
                       Print Receipt
                     </Text>
                   </PressableEvent>
+                  <Pressable
+                    style={{
+                      padding: 10,
+                      backgroundColor: 'white',
+                      borderWidth: 1,
+                      borderColor: 'black',
+                      borderRadius: 5,
+                      width: Dimensions.get('window').width / 1.5,
+                      height: Dimensions.get('window').height / 8,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      this.connector && this.cancelAndClearConnection();
+                      this.mount && this.setState(BaseState);
+                    }}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                      }}>
+                      Return
+                    </Text>
+                  </Pressable>
                 </View>
               )}
             </>
           ) : (
-            <></>
+            <>
+              {this.state.stage === 1 && (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontSize: 24, color: 'white'}}>
+                    Scan with your wallet
+                  </Text>
+                  <View
+                    style={{
+                      width: Dimensions.get('window').width * 0.9,
+                      height: Dimensions.get('window').width * 0.9,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                      borderRadius: 10,
+                    }}>
+                    <QRCode
+                      value={this.state.qr}
+                      size={Dimensions.get('window').width * 0.8}
+                      ecl="L"
+                    />
+                  </View>
+                </View>
+              )}
+              {this.state.stage === 2 && (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontSize: 24, color: 'white'}}>
+                    Sign with your wallet...
+                  </Text>
+                  <IconFAB name="wallet" size={240} color="white" />
+                </View>
+              )}
+              {this.state.stage === 3 && (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{fontSize: 36, color: 'white'}}>
+                    Payment Success
+                  </Text>
+                  <Pressable
+                    style={{
+                      padding: 10,
+                      backgroundColor: 'white',
+                      borderWidth: 1,
+                      borderColor: 'black',
+                      borderRadius: 5,
+                      width: Dimensions.get('window').width / 1.5,
+                      height: Dimensions.get('window').height / 8,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() =>
+                      Linking.openURL(
+                        `https://sepolia.etherscan.io/tx/${this.state.tx}`,
+                      )
+                    }>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                      }}>
+                      Open Explorer
+                    </Text>
+                  </Pressable>
+                  <PressableEvent
+                    hover
+                    style={{
+                      padding: 10,
+                      backgroundColor: 'white',
+                      borderWidth: 1,
+                      borderColor: 'black',
+                      borderRadius: 5,
+                      width: Dimensions.get('window').width / 1.5,
+                      height: Dimensions.get('window').height / 8,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    styleHover={{
+                      backgroundColor: '#333333ff',
+                    }}
+                    onPress={async () => {
+                      await this.getDataURL();
+                      const results = await RNHTMLtoPDF.convert({
+                        html: `
+                            <div style="text-align: center;">
+                                <img src='${logo}' width="400px"></img>
+                                <h1 style="font-size: 3rem;">--------- Original Reciept ---------</h1>
+                                <h1 style="font-size: 3rem;">Date: ${new Date().toLocaleDateString()}</h1>
+                                <h1 style="font-size: 3rem;">Type: Wallet Connect</h1>
+                                <h1 style="font-size: 3rem;">------------------ • ------------------</h1>
+                                <h1 style="font-size: 3rem;">Transaction</h1>
+                                <h1 style="font-size: 3rem;">Amount: ${deleteLeadingZeros(
+                                  formatInputText(this.state.text),
+                                )} ${'GHO'}</h1>
+                                <h1 style="font-size: 3rem;">------------------ • ------------------</h1>
+                                <img src='${this.state.printData}'></img>
+                            </div>
+                            `,
+                        fileName: 'print',
+                        base64: true,
+                      });
+                      await RNPrint.print({filePath: results.filePath});
+                    }}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                      }}>
+                      Print Receipt
+                    </Text>
+                  </PressableEvent>
+                  <Pressable
+                    style={{
+                      padding: 10,
+                      backgroundColor: 'white',
+                      borderWidth: 1,
+                      borderColor: 'black',
+                      borderRadius: 5,
+                      width: Dimensions.get('window').width / 1.5,
+                      height: Dimensions.get('window').height / 8,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      this.connector && this.cancelAndClearConnection();
+                      this.mount && this.setState(BaseState);
+                    }}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                      }}>
+                      Return
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+            </>
           )}
         </View>
         <View style={{position: 'absolute', bottom: -1000}}>

@@ -16,7 +16,7 @@ export default function MainApp() {
     if (isConnected) {
       router.push("/dashboard");
     }
-  }, [isConnected, isDisconnected]);
+  }, [isConnected, isDisconnected, router]);
 
 
   if (isMobile) {

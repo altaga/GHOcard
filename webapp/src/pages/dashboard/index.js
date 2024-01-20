@@ -10,7 +10,7 @@ import { ConnectKitButton } from "connectkit";
 import { ethers } from "ethers";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { isMobile } from "react-device-detect";
 import { MdSwitchAccessShortcut } from "react-icons/md";
 import { Modal } from "reactstrap";
@@ -20,11 +20,11 @@ import {
   useContractWrite,
   useWaitForTransaction,
 } from "wagmi";
+import logo from "../../assets/logo.png";
 import {
   customThemeDashboard,
   customThemeDashboardMobile,
 } from "../../styles/connectKitTheme";
-import logo from "../../assets/logo.png";
 
 export default function MainApp({ card }) {
   // Router
@@ -73,58 +73,49 @@ export default function MainApp({ card }) {
   // Sequentially call all hooks
 
   // Read Token Balances
-  const { data: tokenBalances, refetch: refetchTokenBalances } = isConnected
-    ? useContractRead({
-        address: "0xCD4e0d6D2b1252E2A709B8aE97DBA31164C5a709",
-        abi: walletBalanceProviderABI,
-        functionName: "batchBalanceOf",
-        args: [
-          [accountAddress],
-          [...convertJsonToArray(tokenData, "tokenAddress")],
-        ],
-      })
-    : { data: undefined, refetch: undefined };
-
+  const { data: tokenBalances, refetch: refetchTokenBalances } =
+    useContractRead({
+      address: "0xCD4e0d6D2b1252E2A709B8aE97DBA31164C5a709",
+      abi: walletBalanceProviderABI,
+      functionName: "batchBalanceOf",
+      args: [
+        [accountAddress],
+        [...convertJsonToArray(tokenData, "tokenAddress")],
+      ],
+    });
   // Read Collateral
-  const { data: collateralAsset, refetch: refetchCollateral } = isConnected
-    ? useContractRead({
-        address: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
-        abi: poolProxyABI,
-        functionName: "getUserAccountData",
-        args: [accountAddress],
-      })
-    : { data: undefined, refetch: undefined };
+  const { data: collateralAsset, refetch: refetchCollateral } = useContractRead(
+    {
+      address: "0x6Ae43d3271ff6888e7Fc43Fd7321a503ff738951",
+      abi: poolProxyABI,
+      functionName: "getUserAccountData",
+      args: [accountAddress],
+    }
+  );
 
   const { data: cardPhysicalBalance, refetch: refetchCardPhysical } =
-    isConnected
-      ? useContractRead({
-          address: "0x4017cFEcE25FE7e9038Db1CA641b4B4A9640a15B",
-          abi: icardABI,
-          functionName: "getBalanceECR20",
-          args: [tokenData.GHO.tokenAddress],
-        })
-      : { data: undefined, refetch: undefined };
+    useContractRead({
+      address: "0x4017cFEcE25FE7e9038Db1CA641b4B4A9640a15B",
+      abi: icardABI,
+      functionName: "getBalanceECR20",
+      args: [tokenData.GHO.tokenAddress],
+    });
 
-  const { data: cardVirtualBalance, refetch: refetchCardVirtual } = isConnected
-    ? useContractRead({
-        address: "0x2C20CeE6268422e8d15dea1E66598cd04c92bbAe",
-        abi: icardABI,
-        functionName: "getBalanceECR20",
-        args: [tokenData.GHO.tokenAddress],
-      })
-    : { data: undefined, refetch: undefined };
+  const { data: cardVirtualBalance, refetch: refetchCardVirtual } =
+    useContractRead({
+      address: "0x2C20CeE6268422e8d15dea1E66598cd04c92bbAe",
+      abi: icardABI,
+      functionName: "getBalanceECR20",
+      args: [tokenData.GHO.tokenAddress],
+    });
 
-  const waitForTransactionERC20 = isConnected
-    ? useWaitForTransaction({
-        hash: writeERC20Data?.hash,
-      })
-    : { data: undefined };
+  const waitForTransactionERC20 = useWaitForTransaction({
+    hash: writeERC20Data?.hash,
+  });
 
-  const waitForTransactionICardData = isConnected
-    ? useWaitForTransaction({
-        hash: writeICardData?.hash,
-      })
-    : { data: undefined };
+  const waitForTransactionICardData = useWaitForTransaction({
+    hash: writeICardData?.hash,
+  });
 
   useEffect(() => {
     if (isDisconnected || accountAddress === undefined) return;
@@ -139,7 +130,17 @@ export default function MainApp({ card }) {
       refetchTokenBalances();
       refetchCollateral();
     }
-  }, [waitForTransactionERC20, waitForTransactionICardData, forceUpdate]);
+  }, [
+    waitForTransactionERC20,
+    waitForTransactionICardData,
+    forceUpdate,
+    isDisconnected,
+    accountAddress,
+    refetchCardVirtual,
+    refetchCardPhysical,
+    refetchTokenBalances,
+    refetchCollateral,
+  ]);
 
   // Send Transaction
 
@@ -184,7 +185,7 @@ export default function MainApp({ card }) {
         )
       ).toFixed(2)
     );
-  }, [cardPhysicalBalance]);
+  }, [cardPhysicalBalance, accountAddress, isDisconnected]);
 
   useEffect(() => {
     if (!cardVirtualBalance || isDisconnected || accountAddress === undefined)
@@ -197,7 +198,7 @@ export default function MainApp({ card }) {
         )
       ).toFixed(2)
     );
-  }, [cardVirtualBalance]);
+  }, [cardVirtualBalance, accountAddress, isDisconnected]);
 
   useEffect(() => {
     if (!collateralAsset || isDisconnected || accountAddress === undefined)
@@ -205,7 +206,7 @@ export default function MainApp({ card }) {
     setChainBalance(
       parseFloat(ethers.utils.formatUnits(collateralAsset[0], 8)).toFixed(2)
     );
-  }, [collateralAsset]);
+  }, [collateralAsset, accountAddress, isDisconnected]);
 
   // Catch Balance and Setup Tokens
 
@@ -217,7 +218,7 @@ export default function MainApp({ card }) {
       parseFloat(ethers.utils.formatUnits(b, zeros[i])).toFixed(4)
     );
     setTokenBalancesArray(balances);
-  }, [tokenBalances]);
+  }, [tokenBalances, accountAddress, isDisconnected]);
 
   if (isMobile) {
     return (
@@ -787,8 +788,17 @@ export default function MainApp({ card }) {
                     flexDirection: "column",
                   }}
                 >
-                 <h4>Physical Card</h4>
-                  <div style={{ height: "80%", width: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+                  <h4>Physical Card</h4>
+                  <div
+                    style={{
+                      height: "80%",
+                      width: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     <h3>{`GHO Balance: $${physicalBalance} USD`}</h3>
                     <CardCointainer last="4599.." />
                     <div
