@@ -36,7 +36,7 @@ Nuestra solucion se basa en una progressive web app basada en NextJS y powered b
 
 - Through [Stripe APIs](https://stripe.com/docs/api) credit card checkouts and virtual accounts.
 
-El flujo de pagos es obtener fondos de la plataforma de [Aave](https://aave.com/), conectarse a nuestra Progressive Web App basada en NextJS y compatible con cualquier wallet gracias a [ConnectKit](https://github.com/family/connectkit), una vez cnoectados transferir los fondos deseados a la tarjeta Virtual o Fisica, esta es una cuenta TradFi gracias a los servicios de [Stripe](https://stripe.com/docs/api) y de crypto gracias a nuestra [Account Abstraction NFT Card](./Contracts/card.sol), una vez hecho esto podras pagar en culquier establecimiento compatible con GHOcard POS App, la cual es una aplicacion nativa de android para cualquier POS con lector de NFC cards.
+Nuestra progresive web dapp ademas de un asset manager de los tokens que tenemos prestados en Aave, nos permite realizar el mint de un Account Abstraction NFT Card el cual es una abstraccion de una tarjeta de debido la cual es una trajeta dual que nos permite relizar pagos tanto de TradFi como Crypto. Esto nos provee toda la seguridad de los sistemas blockchain y todas las ventajas de usar NFTs como lo son programas de recompensas, descuentos y en este caso pagos por NFC.
 
 # Account Abstraction NFT Card:
 
