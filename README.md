@@ -34,7 +34,7 @@ Nuestra solucion se basa en una progressive web app basada en NextJS y powered b
 
 - All EVMs transactions are controlled through [ConnectKit](https://github.com/family/connectkit), [Wagmi](https://wagmi.sh/) and [Viem](https://viem.sh/)
 
-- Through [Stripe APIs](https://stripe.com/docs/api) credit card checkouts and virtual accounts.
+- Through [Stripe APIs](https://stripe.com/docs/api) debit card checkouts and virtual accounts.
 
 Nuestra progresive web dapp ademas de un asset manager de los tokens que tenemos prestados en Aave, nos permite realizar el mint de un Account Abstraction NFT Card el cual es una abstraccion de una tarjeta de debido la cual es una trajeta dual que nos permite relizar pagos tanto de TradFi como Crypto. Esto nos provee toda la seguridad de los sistemas blockchain y todas las ventajas de usar NFTs como lo son programas de recompensas, descuentos y en este caso pagos por NFC.
 
