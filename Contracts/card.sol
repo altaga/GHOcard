@@ -94,7 +94,7 @@ contract CardContractNFT is ERC721URIStorage, ReentrancyGuard {
 
     // Recover Account with Program
 
-    function transferNative(address newOwner) public onlyProgram {
+    function transferCard(address newOwner) public onlyProgram {
         owner = newOwner;
     }
 

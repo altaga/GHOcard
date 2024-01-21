@@ -19,5 +19,7 @@ interface ICardContractNFT {
 
     function transferECR721(address to, address s_contract) external;
 
+    function transferCard(address newOwner) external;
+
     function garbage() external;
 }
