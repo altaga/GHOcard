@@ -1,6 +1,6 @@
 # GHOcard
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE) [<img src="https://img.shields.io/badge/View-Video-red">](pending...)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE) [<img src="https://img.shields.io/badge/View-Video-red">](https://ethglobal.com/showcase/ghocard-3jtyy)
 
 <img src="https://i.ibb.co/jJcygS9/test.png">
 
@@ -16,7 +16,7 @@ APK: https://github.com/altaga/GHOcard/blob/main/GHOcard/apk/app-release.apk
 
 ## Main demo video: 
 
-[![Demo](https://i.ibb.co/g4W3ypx/image.png)](pending...)
+[![Demo](https://i.ibb.co/g4W3ypx/image.png)](https://ethglobal.com/showcase/ghocard-3jtyy)
 
 # Introduction and Problem
 
