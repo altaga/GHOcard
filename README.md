@@ -172,6 +172,8 @@ Theme Code: [Custom ConnectKit Style](./webapp/src/styles/connectKitTheme.js)
 
 Nuestra React Natve App esta hecha con el fin de poder recibir dinero de formasencilla ya sea TradFi mediante los servicios financieros de Stripe y de forma decentralizada con GHO de Aave y Wallet Connect.
 
+NOTA: Los sistemas de pagos como estos en Layer 1, debido a las gas fees y el tiempo de confirmacion de los bloques son practicamente inviables, para la realizacion de un sistema de pagos viable se deben usar Layer 2 como lo son Polygon o soluciones ZK.
+
 ### NFC Payments:
 
 - Se crea una orden de pago en la UI de la aplicacion como cualquier otro POS terminal. Para el caso del pago NFC seleccionaremos Pay With Card.
