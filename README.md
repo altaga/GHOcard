@@ -4,7 +4,6 @@
 
 <img src="https://i.ibb.co/jJcygS9/test.png">
 
-GHO powered crypto off-ramp powered by Aave. Mainly using a card to have an off ramp for GHO and AAVE.
 
 ## DApp:
 
@@ -18,13 +17,20 @@ APK: https://github.com/altaga/GHOcard/blob/main/GHOcard/apk/app-release.apk
 
 [![Demo](https://i.ibb.co/g4W3ypx/image.png)](https://ethglobal.com/showcase/ghocard-3jtyy)
 
-# Introduction and Problem
+# Introduction
 
-/////////////////////////////////////////////
+The DeFi world and AAVE have proven to be resilient and a decentralized way to Borrow, lend and earn. And GHO is a promising stablecoin. However, to achieve widespread adoption, it must cater to everyday consumers, including major retailers and mom-and-pop shops.
+ 
+With GHOcard we built a cash out ramp powered by Aave. Mainly using a card to have an off ramp for GHO and AAVE. And with that join both modern fintech and the future which is Web3 and DeFi through AAVE and GHO.
+
+Our progressive web dapp, in addition to being an asset manager for the tokens that we have borrowed in Aave, allows us to mint an Account Abstraction NFT Card, A payment card which is an abstraction of a credit card which in turn is a dual card that allows us to make payments both in Traditional finance and Crypto. This provides us with all the security of blockchain systems such as decentralization and all the advantages of using NFTs such as rewards programs, discounts and in this case NFC payments which in turn can create an entire ecosystem based on our DApp.
+
 
 # Solution
 
-Our solution is based on a progressive web app based on NextJS and powered by ConnectKit, a React Native application for our POS with NFC card reader and both virtual and physical cards to make TradFi and Crypto payments.
+Our solution is based on a progressive web app based on NextJS and powered by ConnectKit, a React Native application for our Point of Sale with NFC card reader and both virtual and physical cards to make TradFi and Crypto payments.
+
+Note: From this poitn forward we will referr to the Point of Sale as "POS" for it to not be confused with "PoS" meaning proof of stake.
 
 ### System's Architecture:
 
