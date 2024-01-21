@@ -24,7 +24,7 @@ APK: https://github.com/altaga/GHOcard/blob/main/GHOcard/apk/app-release.apk
 
 # Solution
 
-Nuestra solucion se basa en una progressive web app basada en NextJS y powered by ConnectKit, una aplicacion React Native para nuestro POS con lector de NFC cards y tarjetas tanto virtuales como fisicas para relizar pagos TradFi y Crypto.
+Our solution is based on a progressive web app based on NextJS and powered by ConnectKit, a React Native application for our POS with NFC card reader and both virtual and physical cards to make TradFi and Crypto payments.
 
 ### System's Architecture:
 
@@ -36,11 +36,11 @@ Nuestra solucion se basa en una progressive web app basada en NextJS y powered b
 
 - Through [Stripe APIs](https://stripe.com/docs/api) debit card checkouts and virtual accounts.
 
-Nuestra progresive web dapp ademas de un asset manager de los tokens que tenemos prestados en Aave, nos permite realizar el mint de un Account Abstraction NFT Card el cual es una abstraccion de una tarjeta de debido la cual es una trajeta dual que nos permite relizar pagos tanto de TradFi como Crypto. Esto nos provee toda la seguridad de los sistemas blockchain y todas las ventajas de usar NFTs como lo son programas de recompensas, descuentos y en este caso pagos por NFC.
+Our progressive web dapp, in addition to being an asset manager for the tokens that we have borrowed in Aave, allows us to mint an Account Abstraction NFT Card which is an abstraction of a credit card which is a dual card that allows us to make payments both TradFi and Crypto. This provides us with all the security of blockchain systems and all the advantages of using NFTs such as rewards programs, discounts and in this case NFC payments.
 
 # Account Abstraction NFT Card:
 
-This AA NFT Card integrates an abstraction wallet and NFT, providing a seamless and secure pay system for blockchain-based financial ecosystems with exclusive benefits tied to NFT ownership.
+This Account Abstraction NFT Card integrates an abstraction wallet and NFT, providing a seamless and secure payment system for blockchain-based financial ecosystems with exclusive benefits tied to NFT ownership.
 
 Contract: [Smart Contract Code](./Contracts/card.sol)
 
@@ -72,7 +72,7 @@ Interface: [Interface Smart Contract Code](./Contracts/icard.sol)
 
         fallback() external payable {} // Receive Deposits if receive doesn't work
 
-- NFT Implementation: Las ventajas de utilizar un NFT en vez de un contrato tradicional es poder tener los datos de la tarjeta de forma publica y poder realizar los cobros en terminal de forma mas sencilla.
+- NFT Implementation: The advantages of using an NFT instead of a traditional contract is being able to have the card data publicly available and being able to make payments at the terminal more easily.
 
   - Card Metadata Example:
 
@@ -102,26 +102,26 @@ Interface: [Interface Smart Contract Code](./Contracts/icard.sol)
           "image": "ipfs://bafybeiglg7vxq5g5bz5rlzyuum6lsho57gmnk3cqisdi55b3scbmps7hni/visaPhysical.png"
           }
 
-  - La lectura de una tarjeta VISA y Mastercard son diferentes a nivel de codigo.
+  - Reading a VISA and Mastercard card are different at the code level.
     
     - Card Metadata: { "trait_type": "kind", "value": "visa" }
     - [Read NFC Card Code](./GHOcard/src/components/readCard.js)
 
-  - Revision de los tokens disponibles en la tarjeta.
+  - Review of the tokens available on the card.
     - Card Metadata: { "trait_type": "tokens", "value": [ "GHO" ] }
 
-  - A nivel de Front End nos permite realizar una personalizacion de la tarjeta y mejorar la experiencia de usuario.
+  - At the Front End level it allows us to personalize the card and improve the user experience.
 
     <img src="https://i.ibb.co/DCcNhgp/image.png">
 
-- POS Payment:
-  - Para realizar los pagos mediante NFC del contrato debemos relizar una llamada a nuestra API de pagos, ya que esta esta combinada con la interfaz de Stripe para poder realizar pagos TradFi esta se realiza en cloud mediante una AWS Lambda. 
+- Point of Sale Payment:
+  - To make payments through NFC of the contract we must make a call to our payment API, since this is combined with the Stripe interface to be able to make TradFi payments, this is done in the cloud through an AWS Lambda.
     - [AWS Lambda Code](./AWS_Lambda/index.mjs)
     - [POS API Call Code](./GHOcard/src/screens/payment/payment.js)
 
 # Progressive Web DApp:
 
-Nuestra aplicacion web powered by [ConnectKit](https://github.com/family/connectkit) permite una interfaz sencilla para realizar el mint de las tarjetas virtuales y a su vez poder agregarles o quitarles saldo, segun nuestras necesidades.
+Our Webapp powered by [ConnectKit](https://github.com/family/connectkit) allows a simple interface to mint virtual cards and at the same time be able to add or remove balance from them, according to our needs.
 
 URL: https://ghocard.vercel.app/
 
@@ -154,41 +154,41 @@ Theme Code: [Custom ConnectKit Style](./webapp/src/styles/connectKitTheme.js)
 
 ### DApp screens:
 
-- Conectarse a la DApp mediante ConnectKit:
+- Connect to the DApp using ConnectKit:
 
     <img src="https://i.ibb.co/k9ZRn9v/Screenshot-20240120-184233.png" width="33%">
 
-- Summary de los Assets en Aave y Tarjetas mintadas:
+- Summary of Assets in Aave and Minted Cards:
 
     <img src="https://i.ibb.co/s121xwB/Screenshot-20240120-184220.png" width="33%"> 
     <img src="https://i.ibb.co/PrH6kVp/Screenshot-20240120-184224.png" width="33%">
 
-- Agregar Balance a una tarjeta con solo un boton:
+- Add Balance to a card with just one button:
 
     <img src="https://i.ibb.co/dtx4JHk/Screenshot-20240120-184246.png" width="33%"> 
     <img src="https://i.ibb.co/mGHJb84/Screenshot-20240120-184257.png" width="33%">
 
 # React Native DApp:
 
-Nuestra React Natve App esta hecha con el fin de poder recibir dinero de formasencilla ya sea TradFi mediante los servicios financieros de Stripe y de forma decentralizada con GHO de Aave y Wallet Connect.
+Our React Natve App is made in order to be able to receive money in a simple way, either TradFi through Stripe financial services and in a decentralized way with GHO from Aave and Wallet Connect.
 
-NOTA: Los sistemas de pagos como estos en Layer 1, debido a las gas fees y el tiempo de confirmacion de los bloques son practicamente inviables, para la realizacion de un sistema de pagos viable se deben usar Layer 2 como lo son Polygon o soluciones ZK.
+NOTE: Payment systems like these in Layer 1, due to the gas fees and the block confirmation time, are practically unviable. To create a viable payment system, Layer 2, such as Polygon or ZK solutions, must be used. .
 
 ### NFC Payments:
 
-- Se crea una orden de pago en la UI de la aplicacion como cualquier otro POS terminal. Para el caso del pago NFC seleccionaremos Pay With Card.
+- A payment order is created in the application UI like any other POS terminal. In the case of NFC payment we will select Pay With Card.
 
     <img src="https://i.ibb.co/s5dpp3V/vlcsnap-2024-01-20-18h58m49s410.png" width="33%">
 
-- El POS entrara en modo lectura de tarjetas y esperara una lectura de tarjate en el lector de arriba, sin embargo cualquier celular con lector NFC puede funcionar perfectamente.
+- The POS will enter card reading mode and wait for a card reading on the reader above, however any cell phone with an NFC reader can work perfectly.
 
     <img src="https://i.ibb.co/d2qYvzg/POSbase-1.png" width="33%">
 
-- Una vez leida la tarjeta, segun sea VISA o Mastercard, lo cual podemos saberlo gracias a la metadata, podemos realizar el cobro ya sea de TradFi (Stripe) o Crypto (GHO Aave).
+- Once the card is read, depending on whether it is VISA or Mastercard, which we can know thanks to the metadata, we can charge either TradFi (Stripe) or Crypto (GHO Aave).
 
     <img src="https://i.ibb.co/n1qQ9xd/Screenshot-2024-01-20-192456.png" width="33%">
 
- - En el caso de un pago mediante GHO, llamaremos nuestra API la AWS Lambda que realizara la llamada al smart contract para relizar el pago.
+ - In the case of a payment through GHO, we will call our API the AWS Lambda that will make the call to the smart contract to make the payment.
   
         const contract = new ethers.Contract(
             "0x4017cFEcE25FE7e9038Db1CA641b4B4A9640a15B",
@@ -209,28 +209,28 @@ NOTA: Los sistemas de pagos como estos en Layer 1, debido a las gas fees y el ti
         };
         return response;
 
-- Una vez realizado el pago tendremos las opciones de visualizar el explorer patra verificar el pago en la blockchain, imprimir el recibo o reiniciar el POS para un pago nuevo.
+- Once the payment has been made, we will have the options of viewing the explorer to verify the payment in the blockchain, printing the receipt or restarting the POS for a new payment.
 
     <img src="https://i.ibb.co/zV3dncY/vlcsnap-2024-01-20-19h13m51s283.png" width="32%"> <img src="https://i.ibb.co/6BM1BLW/vlcsnap-2024-01-20-19h13m40s361.png" width="32%"> <img src="https://i.ibb.co/nB1KrTp/Screenshot-2024-01-20-192624.png" width="32%"> 
 
 ### QR Payments:
 
-- Se crea una orden de pago en la UI de la aplicacion como cualquier otro POS terminal. Para el caso del pago con QR seleccionaremos Pay With QR.
+- A payment order is created in the application UI like any other POS terminal. In the case of payment with QR we will select Pay With QR.
 
     <img src="https://i.ibb.co/s5dpp3V/vlcsnap-2024-01-20-18h58m49s410.png" width="33%">
 
-- Este tipo de pago crear una peticion de pago mediante Wallet Connect, este sera un QR se un solo uso, asi que una vez terminada la conexion en la DApp no habra riesgo de poder generar otra peticion posterior.
+- This type of payment will create a payment request through Wallet Connect, this will be a single-use QR, so once the connection in the DApp is finished there will be no risk of generating another subsequent request.
 
     <img src="https://i.ibb.co/FxDVtWy/vlcsnap-2024-01-20-18h59m25s134.png" width="33%">
 
-- Conectarse a la DApp es tan sencillo como abrir el QR reader de nuestra wallet de preferencia y realizar la conexion a la misma.
+- Connecting to the DApp is as simple as opening the QR reader of our preferred wallet and connecting to it.
 
     <img src="https://i.ibb.co/QnyStkD/vlcsnap-2024-01-20-21h53m45s818.png" width="32%"> <img src="https://i.ibb.co/tPMNqkY/vlcsnap-2024-01-20-21h53m52s645.png" width="32%"> <img src="https://i.ibb.co/txwM9k3/vlcsnap-2024-01-20-21h54m01s616.png" width="32%">
 
-- Una vez realizada la conexion el POS nos mostrara una pantalla se espera, ya que tendremos que firmar la transaccion en la wallet.
+- Once the connection is made, the POS will show us an expected screen, since we will have to sign the transaction in the wallet.
 
     <img src="https://i.ibb.co/YhZ7F4R/vlcsnap-2024-01-20-21h56m05s601.png" width="26%"> <img src="https://i.ibb.co/6FjycqQ/vlcsnap-2024-01-20-19h13m13s915.png" width="32%">
 
-- Una vez realizado el pago tendremos las opciones de visualizar el explorer patra verificar el pago en la blockchain, imprimir el recibo o reiniciar el POS para un pago nuevo.
+- Once the payment has been made, we will have the options of viewing the explorer to verify the payment in the blockchain, printing the receipt or restarting the POS for a new payment.
 
     <img src="https://i.ibb.co/zV3dncY/vlcsnap-2024-01-20-19h13m51s283.png" width="32%"> <img src="https://i.ibb.co/6BM1BLW/vlcsnap-2024-01-20-19h13m40s361.png" width="32%"> <img src="https://i.ibb.co/1XyQwm4/vlcsnap-2024-01-20-19h13m54s458.png" width="32%"> 
